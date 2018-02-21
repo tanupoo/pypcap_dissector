@@ -10,3 +10,7 @@ Yet another IP packet dissector.
 - python3
 - json fiendly
 
+## requirement
+
+- python3
+- pcap
