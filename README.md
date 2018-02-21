@@ -13,4 +13,8 @@ Yet another IP packet dissector.
 ## requirement
 
 - python3
-- pcap
+- pypcap
+
+In Linux OS, libpcap-dev might be required to install pypcap.
+
+
