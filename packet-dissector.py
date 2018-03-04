@@ -65,7 +65,9 @@ def parse_args():
 
     return args
 
-if __name__ == '__main__':
-    opt = parse_args()
-    pcap_test(opt.devname, direction=opt.direction, verbose=opt.f_verbose,
-              debug=opt.f_debug)
+'''
+main
+'''
+opt = parse_args()
+pcap_test(opt.devname, direction=opt.direction, verbose=opt.f_verbose,
+            debug=opt.f_debug)
