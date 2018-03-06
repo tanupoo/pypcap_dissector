@@ -1,11 +1,11 @@
-pypackutil
-==========
+pypcap-dissector
+================
 
 Yet another IP packet dissector.
 
 ## goal
 
-- simple
+- simple, lightweight
 - pcap base so that it can work on MacOSX.
 - python3
 - json fiendly

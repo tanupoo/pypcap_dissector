@@ -1,6 +1,3 @@
-#!/usr/bin/env python
-# -*- coding: utf-8 -*-
-
 from proto_name import *
 from json_keys import *
 from defs_L5 import *
