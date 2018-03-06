@@ -1,24 +1,37 @@
-#!/usr/bin/env python
-# -*- coding: utf-8 -*-
-
 from proto_name import *
 from json_keys import *
+from defs_L2 import *
 from defs_L3 import *
 from util import *
 
-def dissector(x):
+def dissector(x, dloff=0, dltype=None):
     '''
-    return (dissectors_L3)
+    if dloff is not 0 and dltype is not None, it will dissect L2.
+
+    return (dissectors_L3 or L2)
     or
     return { JK_EMSG:(error-message) }
     '''
+    this = None
+    if dloff > 0 and dloff < len(x) and dltype != None:
+        if dltype in dissectors_L2:
+            this = dissectors_L2[dltype](x[:dloff])
+        else:
+            return { JK_EMSG:"unsupported. L2 proto=%d" % dltype }
+
+    x = x[dloff:]
+
     # only show ipv6 packets
     if len(x) < 1:
         return { JK_EMSG:"invalid packet length" }
 
     proto = (x[0]&0xf0)>>4
     if proto in dissectors_L3:
-        return dissectors_L3[proto](x)
+        if this != None:
+            this[JK_PAYLOAD] = dissectors_L3[proto](x)
+            return this
+        else:
+            return dissectors_L3[proto](x)
     else:
         return { JK_EMSG:"unsupported. L3 proto=%d" % proto }
 
@@ -33,6 +46,6 @@ if __name__ == "__main__":
     for i in test_packet:
         ret = dissector(i)
         #print(ret)
-        pprint(ret)
+        dump_pretty(ret)
         print("===")
 

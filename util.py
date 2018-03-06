@@ -1,6 +1,3 @@
-#!/usr/bin/env python
-# -*- coding: utf-8 -*-
-
 import struct
 from proto_name import *
 
@@ -41,6 +38,12 @@ def ipv4addr(x):
     '''
     return ".".join(["%d"%x[i] for i in range(4)])
 
+def macaddr(x):
+    '''
+    x: assuming the length is 6 bytes
+    '''
+    return "-".join(["%02x"%x[i] for i in range(6)])
+
 def dump_byte(x):
     return "".join([ " %02x"%x[i] if i and i%4==0 else "%02x"%x[i]
                    for i in range(len(x)) ])
@@ -51,6 +54,8 @@ def dump_pretty(a, indent="  "):
             print('%s"%s": "%s"' % (indent, k, ipv6addr(a[k])))
         elif k in ["IPV4.SRC_ADDR","IPV4.DST_ADDR"]:
             print('%s"%s": "%s"' % (indent, k, ipv4addr(a[k])))
+        elif k in ["ETH2.SRC_MAC","ETH2.DST_MAC"]:
+            print('%s"%s": "%s"' % (indent, k, macaddr(a[k])))
         elif isinstance(a[k], (bytes, bytearray)):
             print('%s"%s": "%s"' %
                   (indent, k, "".join(["%02x"%i for i in a[k]])))
@@ -58,7 +63,8 @@ def dump_pretty(a, indent="  "):
             print('%s"%s": ' % (indent, k))
             dump_pretty(a[k], indent=indent+"  ")
         else:
-            print('%s"%s": "%s"' % (indent, k, repr(a[k])))
+            #print('%s"%s": "%s"' % (indent, k, repr(a[k])))
+            print('%s"%s": "%s"' % (indent, k, str(a[k])))
 
 if __name__ == "__main__":
     print(ipv4addr([0x7f, 0, 0, 1]))

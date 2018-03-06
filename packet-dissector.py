@@ -9,44 +9,59 @@ import pcap
 import dissector
 import argparse
 
-#filter_rule = pcap.bpf("ip6 and udp")
+def read_file(filename, dloff=0, dltype=None, verbose=False, debug=False):
+    if filename == "-":
+        data = sys.stdin
+    else:
+        data = open(filename).read()
+    #
+    if verbose:
+        print(dissector.dump_byte(data))
+    read_data(data, dloff=pc.dloff, dltype=dltype, verbose=verbose, debug=debug)
 
-def pcap_test(devname, direction=pcap.PCAP_D_IN, verbose=False, debug=False):
-    try:
-        pc = pcap.pcap(devname, immediate=True)
-        #pc.setfilter(filter_rule)
-    except:
-        print(pc.geterr())
-        return
+def read_device(devname, direction=pcap.PCAP_D_IN, verbose=False, debug=False):
 
-    print("listening on %s" % devname)
-    print("datalink: ", pc.datalink())
-    print("dloff: ", pc.dloff)
-    print("filter: ", pc.filter)
-    print("snaplen: ", pc.snaplen)
+    pc = pcap.pcap(devname, immediate=True)
+    if verbose:
+        print("listening on %s" % devname)
+        print("datalink: ", pc.datalink())
+        print("dloff: ", pc.dloff)
+        print("filter: ", pc.filter)
+        print("snaplen: ", pc.snaplen)
 
     pc.setdirection(direction)
+    #
+    for ts, data in pc:
+        print("##", ts)
+        if verbose:
+            print(dissector.dump_byte(data))
+        read_data(data, dloff=pc.dloff, dltype=pc.datalink(),
+                  verbose=verbose, debug=debug)
 
-    #try:
-    for ts, pkt in pc:
-        ret = dissector.dissector(pkt[pc.dloff:])
-        if ret != False:
-            print("##", ts)
-            if verbose:
-                print(dissector.dump_byte(pkt))
-            if debug:
-                print(ret)
-            print(dissector.dump_pretty(ret))
-    #except Exception as e:
-    #    print(e, pc.geterr())
+def read_data(data, dloff=0, dltype=None, verbose=False, debug=False):
+    ret = dissector.dissector(data, dloff=dloff, dltype=dltype)
+    if debug:
+        print(ret)
+    if ret != False:
+        print(dissector.dump_pretty(ret))
 
 def parse_args():
     p = argparse.ArgumentParser(description="a packet dissector.",
                                 epilog=".")
-    p.add_argument("devname", metavar="DEV", type=str, help="device name.")
+    p.add_argument("target", metavar="TARGET", type=str,
+                   help="device name.")
     p.add_argument("-t", action="store", dest="direction",
                    default="in",
-                   help="specify to capture the outbound packet. 'in', 'out', 'inout'.  default is inbound packet only.")
+                   help="""specify the direction of the capturing,
+                   which is either 'in' (default), 'out', 'inout'.""")
+    p.add_argument("-f", action="store_true", dest="f_filename",
+                   help="""specify the target is the filename containing
+                   packet data.""")
+    p.add_argument("-l", action="store", dest="dloff", type=int,
+                   default=0,
+                   help="""specify the offset of the L3 data in the data file.
+                   default is 0, which means that there is no datalink data in
+                   the file.""")
     p.add_argument("-v", action="store_true", dest="f_verbose",
                    help="enable verbose mode.")
     p.add_argument("-d", action="store_true", dest="f_debug",
@@ -69,5 +84,10 @@ def parse_args():
 main
 '''
 opt = parse_args()
-pcap_test(opt.devname, direction=opt.direction, verbose=opt.f_verbose,
-            debug=opt.f_debug)
+if opt.f_filename:
+    read_file(sys.argv[1], datalink=opt.f_datalink,
+                verbose=opt.f_verbose, debug=opt.f_debug)
+else:
+    read_device(sys.argv[1], direction=opt.direction,
+                verbose=opt.f_verbose, debug=opt.f_debug)
+
