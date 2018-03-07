@@ -26,6 +26,9 @@ def dissect_hdr(domain, hdr_elm, x):
     #
     return hdr_flds, offset, None
 
+def mjk(domain, key):
+    return domain + "." + key
+
 def ipv6addr(x):
     '''
     x: assuming the length is 16 bytes

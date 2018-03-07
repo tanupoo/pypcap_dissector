@@ -17,13 +17,13 @@ def dissect_null(x):
         ("AF", "=I", 0),
     )
     this = {}
-    this[JK_PROTO] = PROTO.NULL.name
-    fld, offset, emsg = dissect_hdr(this[JK_PROTO], hdr, x)
+    domain = PROTO.NULL.name
+    this[JK_PROTO] = domain
+    fld, offset, emsg = dissect_hdr(domain, hdr, x)
     if fld == None:
         this[JK_EMSG] = emsg
         return this
 
-    domain = this[JK_PROTO]
     this[JK_HEADER] = fld
 
     return this
