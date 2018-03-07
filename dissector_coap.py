@@ -29,11 +29,11 @@ def dissect_coap(x):
 
     if fld[mjk(domain,JK_TOKEN_LEN)] > 0:
         try:
-            fld[mjk(domain, TOKEN)] = x[:fld[mjk(domain, TOKEN_LEN)]]
+            fld[mjk(domain,JK_TOKEN)] = x[:fld[mjk(domain,JK_TOKEN_LEN)]]
         except ValueError as e:
             this[JK_EMSG] = e
             return this
-        offset += fld[mjk(domain, TOKEN_LEN)]
+        offset += fld[mjk(domain,JK_TOKEN_LEN)]
 
     if len(x[offset:]) > 0:
         fld[JK_PAYLOAD] = x[offset:]
