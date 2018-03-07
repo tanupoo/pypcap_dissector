@@ -14,7 +14,7 @@ def dissect_null(x):
     return { JK_PROTO:"NULL", "EMSG":error-message }
     '''
     hdr = (
-        ("AF", "=L", 0),
+        ("AF", "=I", 0),
     )
     this = {}
     this[JK_PROTO] = PROTO.NULL.name
