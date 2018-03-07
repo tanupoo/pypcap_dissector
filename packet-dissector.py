@@ -11,13 +11,12 @@ import argparse
 
 def read_file(filename, dloff=0, dltype=None, verbose=False, debug=False):
     if filename == "-":
-        data = sys.stdin.read()
+        data = sys.stdin.buffer.read()
     else:
-        data = open(filename).read()
+        data = open(filename).buffer.read()
     #
     if verbose:
         print(dissector.dump_byte(data))
-    data = bytes(data, encoding="utf-8")
     read_data(data, dloff=dloff, dltype=dltype, verbose=verbose, debug=debug)
 
 def read_device(devname, direction=pcap.PCAP_D_IN, verbose=False, debug=False):
