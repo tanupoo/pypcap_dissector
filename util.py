@@ -49,22 +49,23 @@ def dump_byte(x):
                    for i in range(len(x)) ])
 
 def dump_pretty(a, indent="  "):
+    ret = []
     for k in a.keys():
         if k in ["IPV6.SRC_ADDR","IPV6.DST_ADDR"]:
-            print('%s"%s": "%s"' % (indent, k, ipv6addr(a[k])))
+            ret.append('%s"%s": "%s"' % (indent, k, ipv6addr(a[k])))
         elif k in ["IPV4.SRC_ADDR","IPV4.DST_ADDR"]:
-            print('%s"%s": "%s"' % (indent, k, ipv4addr(a[k])))
+            ret.append('%s"%s": "%s"' % (indent, k, ipv4addr(a[k])))
         elif k in ["ETH2.SRC_MAC","ETH2.DST_MAC"]:
-            print('%s"%s": "%s"' % (indent, k, macaddr(a[k])))
+            ret.append('%s"%s": "%s"' % (indent, k, macaddr(a[k])))
         elif isinstance(a[k], (bytes, bytearray)):
-            print('%s"%s": "%s"' %
+            ret.append('%s"%s": "%s"' %
                   (indent, k, "".join(["%02x"%i for i in a[k]])))
         elif isinstance(a[k], dict):
-            print('%s"%s": ' % (indent, k))
-            dump_pretty(a[k], indent=indent+"  ")
+            ret.append('%s"%s": ' % (indent, k))
+            ret.append(dump_pretty(a[k], indent=indent+"  "))
         else:
-            #print('%s"%s": "%s"' % (indent, k, repr(a[k])))
-            print('%s"%s": "%s"' % (indent, k, str(a[k])))
+            ret.append('%s"%s": "%s"' % (indent, k, str(a[k])))
+    return "\n".join(ret)
 
 if __name__ == "__main__":
     print(ipv4addr([0x7f, 0, 0, 1]))
