@@ -11,13 +11,14 @@ import argparse
 
 def read_file(filename, dloff=0, dltype=None, verbose=False, debug=False):
     if filename == "-":
-        data = sys.stdin
+        data = sys.stdin.read()
     else:
         data = open(filename).read()
     #
     if verbose:
         print(dissector.dump_byte(data))
-    read_data(data, dloff=pc.dloff, dltype=dltype, verbose=verbose, debug=debug)
+    data = bytes(data, encoding="utf-8")
+    read_data(data, dloff=dloff, dltype=dltype, verbose=verbose, debug=debug)
 
 def read_device(devname, direction=pcap.PCAP_D_IN, verbose=False, debug=False):
 
@@ -56,12 +57,15 @@ def parse_args():
                    which is either 'in' (default), 'out', 'inout'.""")
     p.add_argument("-f", action="store_true", dest="f_filename",
                    help="""specify the target is the filename containing
-                   packet data.""")
-    p.add_argument("-l", action="store", dest="dloff", type=int,
+                   packet data.  '-' allows the stdin as the input.""")
+    p.add_argument("--dloff", action="store", dest="dloff", type=int,
                    default=0,
                    help="""specify the offset of the L3 data in the data file.
                    default is 0, which means that there is no datalink data in
                    the file.""")
+    p.add_argument("--dltype", action="store", dest="dltype",
+                   default=None,
+                   help="specify the type of the datalink.")
     p.add_argument("-v", action="store_true", dest="f_verbose",
                    help="enable verbose mode.")
     p.add_argument("-d", action="store_true", dest="f_debug",
@@ -85,9 +89,9 @@ main
 '''
 opt = parse_args()
 if opt.f_filename:
-    read_file(sys.argv[1], datalink=opt.f_datalink,
+    read_file(opt.target, dloff=opt.dloff, dltype=opt.dltype,
                 verbose=opt.f_verbose, debug=opt.f_debug)
 else:
-    read_device(sys.argv[1], direction=opt.direction,
+    read_device(opt.target, direction=opt.direction,
                 verbose=opt.f_verbose, debug=opt.f_debug)
 
