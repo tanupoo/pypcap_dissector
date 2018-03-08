@@ -10,15 +10,14 @@ def dissect_udp(x):
     return { JK_PROTO:PROTO, JK_EMSG:(error-message) }
     '''
     hdr = (
-        (JK_SPORT, ">H", 0),
-        (JK_DPORT, ">H", 0),
-        (JK_LEN, ">H", 0),
-        (JK_CKSUM, ">H", 0),
+        (JK_UDP_SPORT, ">H", 0),
+        (JK_UDP_DPORT, ">H", 0),
+        (JK_UDP_LEN, ">H", 0),
+        (JK_UDP_CKSUM, ">H", 0),
     )
     this = {}
-    domain = PROTO.UDP.name
-    this[JK_PROTO] = domain
-    fld, offset, emsg = dissect_hdr(domain, hdr, x)
+    this[JK_PROTO] = PROTO.UDP.name
+    fld, offset, emsg = dissect_hdr(hdr, x)
     if fld == None:
         this[JK_EMSG] = emsg
         return this
@@ -26,10 +25,10 @@ def dissect_udp(x):
     this[JK_HEADER] = fld
 
     proto = None
-    if fld[mjk(domain,JK_SPORT)] in dissectors_L5:
-        proto = fld[mjk(domain,JK_SPORT)]
-    elif fld[mjk(domain,JK_DPORT)] in dissectors_L5:
-        proto = fld[mjk(domain,JK_DPORT)]
+    if fld[JK_UDP_SPORT] in dissectors_L5:
+        proto = fld[JK_UDP_SPORT]
+    elif fld[JK_UDP_DPORT] in dissectors_L5:
+        proto = fld[JK_UDP_DPORT]
     if proto != None:
         this[JK_PAYLOAD] = dissectors_L5[proto](x[offset:])
         return this
@@ -37,5 +36,5 @@ def dissect_udp(x):
         if len(x[offset:]) > 0:
             fld[JK_PAYLOAD] = x[offset:]
         this[JK_EMSG] = ("unsupported. L5 PORT=(%d, %d)" %
-                         (fld[mjk(domain,JK_SPORT)], fld[mjk(domain,JK_DPORT)]))
+                         (fld[JK_UDP_SPORT], fld[JK_UDP_DPORT]))
         return this

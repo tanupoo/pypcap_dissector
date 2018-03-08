@@ -12,28 +12,27 @@ def dissect_ipv6(x):
     key_v_tc_fl = "v_tc_fl"
     hdr = (
         (key_v_tc_fl, ">I", 0x60000000),
-        (JK_LEN, ">H", 0),
-        (JK_NXT, "B", 0),
-        (JK_HOP_LIMIT, "B", 0),
-        (JK_SADDR, "16s", b"\x00" * 16),
-        (JK_DADDR, "16s", b"\x00" * 16),
+        (JK_IPV6_LEN, ">H", 0),
+        (JK_IPV6_NXT, "B", 0),
+        (JK_IPV6_HOP_LIMIT, "B", 0),
+        (JK_IPV6_SADDR, "16s", b"\x00" * 16),
+        (JK_IPV6_DADDR, "16s", b"\x00" * 16),
     )
     this = {}
-    domain = PROTO.IPV6.name
-    this[JK_PROTO] = domain
-    fld, offset, emsg = dissect_hdr(domain, hdr, x)
+    this[JK_PROTO] = PROTO.IPV6.name
+    fld, offset, emsg = dissect_hdr(hdr, x)
     if fld == None:
         this[JK_EMSG] = emsg
         return this
 
-    fld[mjk(domain,JK_VER)] = (fld[mjk(domain,key_v_tc_fl)]>>28)
-    fld[mjk(domain,JK_TRAFFIC_CLASS)] = (fld[mjk(domain,key_v_tc_fl)]>>24)&0x0ff
-    fld[mjk(domain,JK_FLOW_LABEL)] = fld[mjk(domain,key_v_tc_fl)]&0x0fffff
-    del(fld[mjk(domain,key_v_tc_fl)])
+    fld[JK_IPV6_VER] = (fld[key_v_tc_fl]>>28)
+    fld[JK_IPV6_TRAFFIC_CLASS] = (fld[key_v_tc_fl]>>24)&0x0ff
+    fld[JK_IPV6_FLOW_LABEL] = fld[key_v_tc_fl]&0x0fffff
+    del(fld[key_v_tc_fl])
 
     this[JK_HEADER] = fld
 
-    proto = fld[mjk(domain,JK_NXT)]
+    proto = fld[JK_IPV6_NXT]
     if proto in dissectors_L4:
         this[JK_PAYLOAD] = dissectors_L4[proto](x[offset:])
         return this

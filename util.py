@@ -1,9 +1,8 @@
 import struct
 from proto_name import *
 
-def dissect_hdr(domain, hdr_elm, x):
+def dissect_hdr(hdr_elm, x):
     '''
-    domain: protocol name
     hdr_elm: list of the header field format in tuple
     x: header in bytes
 
@@ -16,7 +15,7 @@ def dissect_hdr(domain, hdr_elm, x):
     for i in hdr_elm:
         fld_fmt = i[1]
         fld_size = struct.calcsize(fld_fmt)
-        fld_name = domain + "." + i[0]
+        fld_name = i[0]
         if len(x[offset:]) < fld_size:
             emsg = ("invalid header length, rest:%d < hdr:%d" %
                     (len(x[offset:]), fld_size))
@@ -25,9 +24,6 @@ def dissect_hdr(domain, hdr_elm, x):
         offset += fld_size
     #
     return hdr_flds, offset, None
-
-def mjk(domain, key):
-    return domain + "." + key
 
 def ipv6addr(x):
     '''

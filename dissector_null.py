@@ -14,12 +14,11 @@ def dissect_null(x):
     return { JK_PROTO:"NULL", "EMSG":error-message }
     '''
     hdr = (
-        ("AF", "=I", 0),
+        (JK_DLT_NULL_AF, "=I", 0),
     )
     this = {}
-    domain = PROTO.NULL.name
-    this[JK_PROTO] = domain
-    fld, offset, emsg = dissect_hdr(domain, hdr, x)
+    this[JK_PROTO] = PROTO.NULL.name
+    fld, offset, emsg = dissect_hdr(hdr, x)
     if fld == None:
         this[JK_EMSG] = emsg
         return this

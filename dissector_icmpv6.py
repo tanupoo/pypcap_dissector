@@ -9,14 +9,13 @@ def dissect_icmpv6(x):
     return { JK_PROTO:"ICMPV6", "EMSG":error-message }
     '''
     hdr = (
-        (JK_TYPE, "B", 0),
-        (JK_CODE, "B", 0),
-        (JK_CKSUM, ">H", 0)
+        (JK_ICMPV6_TYPE, "B", 0),
+        (JK_ICMPV6_CODE, "B", 0),
+        (JK_ICMPV6_CKSUM, ">H", 0)
     )
     this = {}
-    domain = PROTO.ICMPV6.name
-    this[JK_PROTO] = domain
-    fld, offset, emsg = dissect_hdr(domain, hdr, x)
+    this[JK_PROTO] = PROTO.ICMPV6.name
+    fld, offset, emsg = dissect_hdr(hdr, x)
     if fld == None:
         this[JK_EMSG] = emsg
         return this
