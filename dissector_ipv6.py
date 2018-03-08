@@ -14,7 +14,7 @@ def dissect_ipv6(x):
         (key_v_tc_fl, ">I", 0x60000000),
         (JK_IPV6_LEN, ">H", 0),
         (JK_IPV6_NXT, "B", 0),
-        (JK_IPV6_HOP_LIMIT, "B", 0),
+        (JK_IPV6_HOP_LMT, "B", 0),
         (JK_IPV6_SADDR, "16s", b"\x00" * 16),
         (JK_IPV6_DADDR, "16s", b"\x00" * 16),
     )
@@ -26,8 +26,8 @@ def dissect_ipv6(x):
         return this
 
     fld[JK_IPV6_VER] = (fld[key_v_tc_fl]>>28)
-    fld[JK_IPV6_TRAFFIC_CLASS] = (fld[key_v_tc_fl]>>24)&0x0ff
-    fld[JK_IPV6_FLOW_LABEL] = fld[key_v_tc_fl]&0x0fffff
+    fld[JK_IPV6_TC] = (fld[key_v_tc_fl]>>24)&0x0ff
+    fld[JK_IPV6_FL] = fld[key_v_tc_fl]&0x0fffff
     del(fld[key_v_tc_fl])
 
     this[JK_HEADER] = fld
