@@ -1,5 +1,4 @@
 import struct
-from proto_name import *
 
 def dissect_hdr(hdr_elm, x):
     '''

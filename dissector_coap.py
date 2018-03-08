@@ -1,12 +1,11 @@
-from proto_name import *
 from json_keys import *
 from util import *
 
 def dissect_coap(x):
     '''
-    return { JK_PROTO:PROTO, "HEADER":fld }
+    return { JK_PROTO:COAP, "HEADER":fld }
     or
-    return { JK_PROTO:PROTO, "EMSG":error-message }
+    return { JK_PROTO:COAP, "EMSG":error-message }
     '''
     tag_v_t_tkl = "v_t_tkl"
     hdr = (
@@ -15,7 +14,7 @@ def dissect_coap(x):
         (JK_COAP_MSGID, ">H", 0),
     )
     this = {}
-    this[JK_PROTO] = PROTO.COAP.name
+    this[JK_PROTO] = JK_COAP
     fld, offset, emsg = dissect_hdr(hdr, x)
     if fld == None:
         this[JK_EMSG] = emsg

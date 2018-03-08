@@ -1,13 +1,12 @@
-from proto_name import *
 from json_keys import *
 from defs_L4 import *
 from util import *
 
 def dissect_ipv6(x):
     '''
-    return { JK_PROTO:PROTO, JK_HEADER:fld, JK_PAYLOAD:(dissectors_L4) }
+    return { JK_PROTO:IPV6, JK_HEADER:fld, JK_PAYLOAD:(dissectors_L4) }
     or
-    return { JK_PROTO:PROTO, JK_EMSG:(error-message) }
+    return { JK_PROTO:IPV6, JK_EMSG:(error-message) }
     '''
     key_v_tc_fl = "v_tc_fl"
     hdr = (
@@ -19,7 +18,7 @@ def dissect_ipv6(x):
         (JK_IPV6_DADDR, "16s", b"\x00" * 16),
     )
     this = {}
-    this[JK_PROTO] = PROTO.IPV6.name
+    this[JK_PROTO] = JK_IPV6
     fld, offset, emsg = dissect_hdr(hdr, x)
     if fld == None:
         this[JK_EMSG] = emsg

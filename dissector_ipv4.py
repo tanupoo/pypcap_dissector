@@ -1,13 +1,12 @@
-from proto_name import *
 from json_keys import *
 from defs_L4 import *
 from util import *
 
 def dissect_ipv4(x):
     '''
-    return { JK_PROTO:PROTO, JK_HEADER:fld, JK_PAYLOAD:dissectors_L4 }
+    return { JK_PROTO:IPV4, JK_HEADER:fld, JK_PAYLOAD:dissectors_L4 }
     or
-    return { JK_PROTO:PROTO, JK_EMSG:error-message }
+    return { JK_PROTO:IPV4, JK_EMSG:error-message }
     '''
     key_f_foff = "f_foff"
     key_v_ihl = "f_v_ihl"
@@ -24,7 +23,7 @@ def dissect_ipv4(x):
         (JK_IPV4_DADDR, "4s", b"\x00" * 4),
     )
     this = {}
-    this[JK_PROTO] = PROTO.IPV4.name
+    this[JK_PROTO] = JK_IPV4
     fld, offset, emsg = dissect_hdr(hdr, x)
     if fld == None:
         this[JK_EMSG] = emsg

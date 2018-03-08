@@ -1,4 +1,3 @@
-from proto_name import *
 from json_keys import *
 from defs_L2 import *
 from defs_L3 import *

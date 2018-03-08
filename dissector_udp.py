@@ -1,13 +1,12 @@
-from proto_name import *
 from json_keys import *
 from defs_L5 import *
 from util import *
 
 def dissect_udp(x):
     '''
-    return { JK_PROTO:PROTO, JK_HEADER:fld, JK_PAYLOAD:(dissectors_L5) }
+    return { JK_PROTO:UDP, JK_HEADER:fld, JK_PAYLOAD:(dissectors_L5) }
     or
-    return { JK_PROTO:PROTO, JK_EMSG:(error-message) }
+    return { JK_PROTO:UDP, JK_EMSG:(error-message) }
     '''
     hdr = (
         (JK_UDP_SPORT, ">H", 0),
@@ -16,7 +15,7 @@ def dissect_udp(x):
         (JK_UDP_CKSUM, ">H", 0),
     )
     this = {}
-    this[JK_PROTO] = PROTO.UDP.name
+    this[JK_PROTO] = JK_UDP
     fld, offset, emsg = dissect_hdr(hdr, x)
     if fld == None:
         this[JK_EMSG] = emsg

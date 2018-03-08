@@ -1,12 +1,11 @@
-from proto_name import *
 from json_keys import *
 from util import *
 
 def dissect_icmpv6(x):
     '''
-    return { JK_PROTO:"ICMPV6", "HEADER":fld }
+    return { JK_PROTO:ICMPV6, "HEADER":fld }
     or
-    return { JK_PROTO:"ICMPV6", "EMSG":error-message }
+    return { JK_PROTO:ICMPV6, "EMSG":error-message }
     '''
     hdr = (
         (JK_ICMPV6_TYPE, "B", 0),
@@ -14,7 +13,7 @@ def dissect_icmpv6(x):
         (JK_ICMPV6_CKSUM, ">H", 0)
     )
     this = {}
-    this[JK_PROTO] = PROTO.ICMPV6.name
+    this[JK_PROTO] = JK_ICMPV6
     fld, offset, emsg = dissect_hdr(hdr, x)
     if fld == None:
         this[JK_EMSG] = emsg
