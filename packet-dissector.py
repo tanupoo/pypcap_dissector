@@ -17,9 +17,11 @@ def read_file(filename, dloff=0, dltype=None, verbose=False, debug=False):
     #
     if verbose:
         print(dissector.dump_byte(data))
-    read_data(data, dloff=dloff, dltype=dltype, verbose=verbose, debug=debug)
+    ret = dissector.dissector(data, dloff=dloff, dltype=dltype)
+    print(dissector.dump_pretty(ret))
 
-def read_device(devname, direction=pcap.PCAP_D_IN, verbose=False, debug=False):
+def read_device(devname, direction=pcap.PCAP_D_IN, pkt_filter=None,
+                verbose=False, debug=False):
 
     pc = pcap.pcap(devname, immediate=True)
     if verbose:
@@ -32,24 +34,30 @@ def read_device(devname, direction=pcap.PCAP_D_IN, verbose=False, debug=False):
     pc.setdirection(direction)
     #
     for ts, data in pc:
-        print("##", ts)
         if verbose:
             print(dissector.dump_byte(data))
-        read_data(data, dloff=pc.dloff, dltype=pc.datalink(),
-                  verbose=verbose, debug=debug)
-
-def read_data(data, dloff=0, dltype=None, verbose=False, debug=False):
-    ret = dissector.dissector(data, dloff=dloff, dltype=dltype)
-    if debug:
-        print(ret)
-    if ret != False:
+        ret = dissector.dissector(data, dloff=pc.dloff, dltype=pc.datalink())
+        if ret == False:
+            continue
+        if debug:
+            print(ret)
+        if pkt_filter and not dissector.contains(pkt_filter, ret):
+            continue
+        print("##", ts)
         print(dissector.dump_pretty(ret))
+
+'''
+def read_data(data, dloff=0, dltype=None, verbose=False, debug=False):
+    return dissector.dissector(data, dloff=dloff, dltype=dltype)
+'''
 
 def parse_args():
     p = argparse.ArgumentParser(description="a packet dissector.",
                                 epilog=".")
     p.add_argument("target", metavar="TARGET", type=str,
                    help="device name.")
+    p.add_argument("pkt_filter", metavar="FILTER", nargs="*",
+                   help="pkt_filter.")
     p.add_argument("-t", action="store", dest="direction",
                    default="in",
                    help="""specify the direction of the capturing,
@@ -87,10 +95,11 @@ def parse_args():
 main
 '''
 opt = parse_args()
+
 if opt.f_filename:
     read_file(opt.target, dloff=opt.dloff, dltype=opt.dltype,
                 verbose=opt.f_verbose, debug=opt.f_debug)
 else:
-    read_device(opt.target, direction=opt.direction,
+    read_device(opt.target, direction=opt.direction, pkt_filter=opt.pkt_filter,
                 verbose=opt.f_verbose, debug=opt.f_debug)
 

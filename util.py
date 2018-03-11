@@ -42,6 +42,28 @@ def macaddr(x):
     '''
     return "-".join(["%02x"%x[i] for i in range(6)])
 
+def _contains(tag, pkt):
+    if pkt == None:
+        return False
+    if tag in pkt["PROTO"]:
+        return True
+    if tag in list(pkt["HEADER"].keys()):
+        return True
+    return _contains(tag, pkt.get("PAYLOAD"))
+
+def contains(tag, pkt):
+    '''
+    tag: string like "ICMPV6"
+    pkt: dissected
+    '''
+    if not (tag and pkt):
+        return False
+    if isinstance(tag, list):
+        for i in tag:
+            return _contains(i, pkt)
+    else:
+        return _contains(tag, pkt)
+
 def dump_byte(x):
     return "".join([ " %02x"%x[i] if i and i%4==0 else "%02x"%x[i]
                    for i in range(len(x)) ])
