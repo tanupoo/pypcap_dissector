@@ -1,5 +1,4 @@
 from json_keys import *
-from defs_L2 import *
 from defs_L3 import *
 from util import *
 
@@ -13,6 +12,7 @@ def dissector(x, dloff=0, dltype=None):
     '''
     this = None
     if dloff > 0 and dloff < len(x) and dltype != None:
+        from defs_L2 import dissectors_L2
         if dltype in dissectors_L2:
             this = dissectors_L2[dltype](x[:dloff])
         else:

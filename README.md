@@ -18,7 +18,7 @@ If you want a full set of dissectors, use dpkt, scapy or something like that.
 ## requirement
 
 - python3
-- pypcap
+- pypcap if you want to dissect the pcap format file or stream.
 
 In Linux OS, libpcap-dev might be required to install pypcap.
 
