@@ -1,5 +1,5 @@
 from json_keys import *
-from util import *
+import pypacket_dissector as pd
 
 def dissect_en10mb(x):
     '''
@@ -13,12 +13,12 @@ def dissect_en10mb(x):
         (JK_EN10MB_TYPE, ">H", 0),
     )
     this = {}
-    this[JK_PROTO] = JK_EN10MB
-    fld, offset, emsg = dissect_hdr(hdr, x)
+    this[pd.JK_PROTO] = JK_EN10MB
+    fld, offset, emsg = pd.dissect_hdr(hdr, x)
     if fld == None:
-        this[JK_EMSG] = emsg
+        this[pd.JK_EMSG] = emsg
         return this
 
-    this[JK_HEADER] = fld
+    this[pd.JK_HEADER] = fld
 
     return this

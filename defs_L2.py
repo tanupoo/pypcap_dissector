@@ -1,6 +1,6 @@
 import pcap
-from dissector_null import *
-from dissector_en10mb import *
+from dissector_null import dissect_null
+from dissector_en10mb import dissect_en10mb
 
 dissectors_L2 = {
     pcap.DLT_NULL: dissect_null,

@@ -1,0 +1,3 @@
+[submodule "pypacket_dissector"]
+	path = pypacket_dissector
+	url = https://github.com/tanupoo/pypacket_dissector.git
