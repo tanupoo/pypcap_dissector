@@ -10,9 +10,10 @@ from defs_L2 import dissectors_L2
 from dissector_datalink import dissect_datalink
 import pypacket_dissector as pd
 import argparse
+from binascii import a2b_hex
 
 def read_device(devname, direction=pcap.PCAP_D_IN, show_l2=False,
-                pkt_filter=None, show_raw=False,
+                pkt_filter=None, show_raw=False, delimiter=None,
                 verbose=False, debug=False):
 
     pc = pcap.pcap(devname, immediate=True)
@@ -26,15 +27,6 @@ def read_device(devname, direction=pcap.PCAP_D_IN, show_l2=False,
     pc.setdirection(direction)
     #
     for ts, data in pc:
-        if show_raw:
-            if show_l2:
-                sys.stdout.buffer.write(data)
-            else:
-                sys.stdout.buffer.write(data[pc.dloff:])
-            sys.stdout.buffer.write(b"\x00\x01\x02SEP\xff")
-            sys.stdout.buffer.flush()
-            continue
-        #
         if verbose:
             print(pd.dissector.dump_byte(data))
         # dissect L2
@@ -51,7 +43,20 @@ def read_device(devname, direction=pcap.PCAP_D_IN, show_l2=False,
             continue
         if debug:
             print(ret3)
+        #
         if pkt_filter and not pd.contains(pkt_filter, ret3):
+            continue
+        #
+        if show_raw:
+            if show_l2:
+                sys.stdout.buffer.write(data)
+            else:
+                sys.stdout.buffer.write(data[pc.dloff:])
+            # add delimiter if needed
+            if delimiter:
+                sys.stdout.buffer.write(delimiter)
+            # flush
+            sys.stdout.buffer.flush()
             continue
         print("##", ts)
         print(pd.dump_pretty(ret3, l2=ret2))
@@ -64,6 +69,10 @@ def parse_args():
                    help="pkt_filter.")
     p.add_argument("--raw", action="store_true", dest="show_raw",
                    help="specify to show raw data.")
+    p.add_argument("--delimiter", action="store", dest="_delimiter",
+                   default=pd.DELIMITER,
+                   help='''specify a delimiter to read a series of data from the
+                   stdin. e.g. {:s}'''.format(pd.DELIMITER))
     p.add_argument("--show-l2", action="store_true", dest="show_l2",
                    help="specify to dissect datalink.")
     p.add_argument("-t", action="store", dest="direction",
@@ -86,6 +95,11 @@ def parse_args():
         print("ERROR: direction must be either 'in', 'out', 'inout'.")
         exit(1)
 
+    if args._delimiter == "":
+        args.delimiter = None
+    else:
+        args.delimiter = a2b_hex(args._delimiter)
+
     return args
 
 '''
@@ -93,7 +107,7 @@ main
 '''
 opt = parse_args()
 read_device(opt.target, direction=opt.direction,
-            show_raw=opt.show_raw,
-            show_l2=opt.show_l2, pkt_filter=opt.pkt_filter,
+            show_raw=opt.show_raw, show_l2=opt.show_l2,
+            delimiter=opt.delimiter, pkt_filter=opt.pkt_filter,
             verbose=opt.f_verbose, debug=opt.f_debug)
 
