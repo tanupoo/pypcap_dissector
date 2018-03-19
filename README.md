@@ -62,7 +62,7 @@ You can specify a protocol you want to see.  e.g. IPV6
           "PAYLOAD": "5aaf2e5b0002983c"
 
 You can pass the data captured to the stdout with the --raw option
-so that you can use other dessector.
+so that you can use other dissector.
 
 Please remember that the separator of each packet is *b"\x00\x01\x02SEP\xff"*.
 
